@@ -1,0 +1,27 @@
+services:
+    # Default settings for all services defined in this file
+    _defaults:
+        autowire: false # Automatic dependency injection is disabled
+        autoconfigure: false # Services won't be automatically tagged for features like event listeners or form extensions
+        public: false # Services are private by default and can't be accessed directly from outside the container
+
+    # Declare the Transformer service
+    Lodel\DataInteroperabilityBundle\Service\Transformer: ~
+
+    # Declare the TeiUploadFormListener service
+    Lodel\DataInteroperabilityBundle\EventListener\TeiUploadFormListener:
+        arguments:
+            # Inject the Transformer service into the $transformer argument
+            $transformer: '@Lodel\DataInteroperabilityBundle\Service\Transformer'
+        tags:
+            # Tag this service as a form event subscriber
+            - { name: 'form.event_subscriber' }
+
+    # Declare the TeiUploadFormTypeExtension service
+    Lodel\DataInteroperabilityBundle\Form\TeiUploadFormTypeExtension:
+        arguments:
+            # Inject the TeiUploadFormListener service into the $formListener argument
+            $formListener: '@Lodel\DataInteroperabilityBundle\EventListener\TeiUploadFormListener'
+        tags:
+            # Tag this service as a form type extension
+            - { name: form.type_extension }

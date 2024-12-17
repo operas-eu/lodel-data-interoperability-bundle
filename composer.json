@@ -1,0 +1,59 @@
+{
+    "name": "lodel/lodel-data-interoperability-bundle",
+    "description": "",
+    "type": "symfony-bundle",
+    "license": "proprietary",
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require": {
+        "php": ">=8.1",
+        "ext-dom": "*",
+        "ext-json": "*",
+        "ext-libxml": "*",
+        "ext-xsl": "*",
+        "lodel/lodel-skeleton": "dev-main",
+        "symfony/form": "6.4.*",
+        "symfony/framework-bundle": "6.4.*",
+        "symfony/http-client": "6.4.*",
+        "symfony/validator": "6.4.*"
+    },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3.8",
+        "phpstan/extension-installer": "^1.2",
+        "phpstan/phpstan": "^1.9",
+        "phpstan/phpstan-phpunit": "^1.0",
+        "phpstan/phpstan-symfony": "^1.2",
+        "phpunit/phpunit": "^9.5",
+        "symfony/phpunit-bridge": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Lodel\\DataInteroperabilityBundle\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Lodel\\DataInteroperabilityBundle\\Tests\\": "tests/"
+        }
+    },
+    "config": {
+        "preferred-install": {
+            "*": "dist"
+        },
+        "sort-packages": true,
+        "allow-plugins": {
+            "phpstan/extension-installer": true,
+            "symfony/flex": false
+        }
+    },
+    "repositories": {
+        "lodel/lodel": {
+            "type": "vcs",
+            "url": "git@gitlab.huma-num.fr:openedition/lodel/lodel.git"
+        },
+        "lodel/lodel-skeleton": {
+            "type": "vcs",
+            "url": "git@gitlab.labocleo.org:oe-sect-info/lodel/lodel-skeleton.git"
+        }
+    }
+}
