@@ -30,7 +30,7 @@ class TeiUploadFormListener implements EventSubscriberInterface
     /**
      * Subscribes to the PRE_SUBMIT event for forms.
      *
-     * @return array<string,string> list of events and their corresponding methods
+     * @return array list of events and their corresponding methods
      */
     public static function getSubscribedEvents(): array
     {

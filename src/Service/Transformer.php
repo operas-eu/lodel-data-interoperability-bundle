@@ -17,18 +17,31 @@ declare(strict_types=1);
 
 namespace Lodel\DataInteroperabilityBundle\Service;
 
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Process\Process;
 
 /**
- * Handles XML file transformation using XSLT stylesheets via Saxon-HE.
+ * Service responsible for transforming XML files using XSLT stylesheets through Saxon-HE.
  */
 class Transformer implements TransformerInterface
 {
-    // Path to the Saxon-HE JAR file for XSLT processing.
-    private const SAXON_DIR = __DIR__.'/../Resources/scripts/saxon-he-10.6.jar';
+    /**
+     * @var array<string, mixed> Handles configuration settings for stylesheets and Saxon-HE processing
+     */
+    private array $config;
 
-    // Directory containing XSLT stylesheets organized by transformation type.
-    private const STYLESHEET_DIR = __DIR__.'/../Resources/stylesheets';
+    /**
+     * Initializes the service by retrieving the 'lodel_data_interoperability' configuration
+     * from the application's parameter bag.
+     *
+     * @param ParameterBagInterface $params The parameter bag service containing configuration parameters.
+     *                                      This will be used to fetch the 'lodel_data_interoperability' configuration.
+     */
+    public function __construct(private ParameterBagInterface $params)
+    {
+        // Load and store the 'lodel_data_interoperability' configuration as an associative array.
+        $this->config = (array) $this->params->get('lodel_data_interoperability');
+    }
 
     /**
      * Transforms an XML file into another XML format using the specified transformation type.
@@ -42,20 +55,23 @@ class Transformer implements TransformerInterface
      */
     public function transform(string $inputFile, string $transformation): string
     {
-        // Retrieve the list of XSLT stylesheets for the given transformation type.
-        $xsltSheets = self::getStylesheets($transformation);
+        if ('none' !== $transformation) {
+            // Retrieve the list of XSLT stylesheets for the given transformation type.
+            $xsltSheets = $this->getStylesheets($transformation);
+        }
 
+        // Initialize a DOMDocument for formatting and final validation of the XML output.
         $dom = new \DOMDocument('1.0', 'UTF-8');
         $dom->formatOutput = true;
         $dom->preserveWhiteSpace = false;
 
-        if ($xsltSheets) {
+        if (isset($xsltSheets)) {
             $actual = 1;
 
-            // Process each stylesheet in sequence.
+            // Apply each stylesheet sequentially.
             foreach ($xsltSheets as $xsltSheet) {
                 // Execute the transformation using the current stylesheet.
-                ${"outputFile{$actual}"} = static::execute($inputFile, $transformation, $xsltSheet);
+                ${"outputFile{$actual}"} = $this->execute($inputFile, $transformation, $xsltSheet);
 
                 // Clean up the previous output file if this is not the first iteration.
                 if ($actual > 1) {
@@ -80,9 +96,7 @@ class Transformer implements TransformerInterface
         }
 
         // Ensure the file has an XML extension.
-        if ('.xml' !== substr($inputFile, -4)) {
-            rename($inputFile, $inputFile .= '.xml');
-        }
+        $inputFile = preg_replace('/\.xml$/', '', $inputFile).'.xml';
 
         // Save the final XML file to ensure proper formatting.
         $dom->load($inputFile);
@@ -92,47 +106,53 @@ class Transformer implements TransformerInterface
     }
 
     /**
-     * Retrieves the XSLT stylesheets for the specified transformation type.
+     * Retrieves the list of XSLT stylesheets for a given transformation type.
      *
      * @param string $transformation the transformation type
      *
-     * @return string[]|null an array of stylesheet filenames, or null if none are found
+     * @return string[] list of XSLT stylesheet filenames
+     *
+     * @throws \Exception If the transformation is not configured in the settings
      */
-    private static function getStylesheets(string $transformation): ?array
+    public function getStylesheets(string $transformation): array
     {
-        $stylesheets = [];
-
-        try {
-            // Iterate over the stylesheet directory for the transformation type.
-            $directory = new \DirectoryIterator(self::STYLESHEET_DIR.'/'.$transformation);
-            foreach ($directory as $fileinfo) {
-                if ($fileinfo->isFile()) {
-                    $stylesheets[] = $fileinfo->getFilename();
-                }
-            }
-
-            // Sort the stylesheets alphabetically for consistent processing order.
-            asort($stylesheets);
-
-            return $stylesheets;
-        } catch (\Exception $e) {
-            // Return null if the directory does not exist or cannot be read.
-            return null;
+        // Verify if the given transformation type is defined in the configuration.
+        if (!isset($this->config['transformation'][$transformation])) {
+            // Throw an exception if the transformation type is not found in the configuration.
+            throw new \Exception("Transformation type '{$transformation}' is not configured.");
         }
+
+        // Check if the transformation has an associated list of files.
+        if (!isset($this->config['transformation'][$transformation]['files'])) {
+            throw new \Exception("Transformation '$transformation' does not have a listed set of files.");
+        }
+
+        // Get the list of stylesheets files associated with the transformation.
+        $stylesheets = $this->config['transformation'][$transformation]['files'];
+
+        // Ensure that each stylesheet file exists in the designated directory.
+        foreach ($stylesheets as $stylesheet) {
+            $stylesheetPath = $this->config['stylesheets_dir'].'/'.$stylesheet;
+            if (!file_exists($stylesheetPath)) {
+                throw new \Exception("Stylesheet file '$stylesheet' not found.");
+            }
+        }
+
+        return $stylesheets;
     }
 
     /**
-     * Executes the Saxon-HE JAR to apply the given XSLT stylesheet to the input file.
+     * Executes an XSLT transformation using Saxon-HE.
      *
      * @param string $inputFile      path to the input XML file
-     * @param string $transformation the transformation type (used for paths and naming)
-     * @param string $xsltSheet      filename of the XSLT stylesheet to apply
+     * @param string $transformation the transformation type (used for naming and path)
+     * @param string $xsltSheet      the XSLT stylesheet to apply
      *
-     * @return string path to the transformed output XML file
+     * @return string path to the output XML file
      *
-     * @throws \Exception if the process fails or errors occur
+     * @throws \Exception if the Saxon-HE process encounters an error
      */
-    protected static function execute(string $inputFile, string $transformation, string $xsltSheet): string
+    protected function execute(string $inputFile, string $transformation, string $xsltSheet): string
     {
         // Create a temporary output file.
         $outputFile = tempnam(sys_get_temp_dir(), $transformation.'_');
@@ -142,9 +162,9 @@ class Transformer implements TransformerInterface
         $process = new Process([
             'java',
             '-jar',
-            self::SAXON_DIR,
+            $this->config['saxon_dir'],
             '-s:'.$inputFile, // Source file
-            '-xsl:'.self::STYLESHEET_DIR.'/'.$transformation.'/'.$xsltSheet, // XSLT stylesheet
+            '-xsl:'.$this->config['stylesheets_dir'].'/'.$xsltSheet, // XSLT stylesheet
             '-o:'.$outputFile, // Output file
         ]);
         $process->setTimeout(300); // Set a timeout of 5 minutes for the process.

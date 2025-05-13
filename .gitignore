@@ -1,5 +1,7 @@
 /vendor/
 /docs/
-/builds/
+/build/
+/var/
 composer.lock
 .php-cs-fixer.cache
+.phpunit.cache

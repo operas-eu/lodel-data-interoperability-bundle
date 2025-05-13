@@ -49,7 +49,7 @@
     "repositories": {
         "lodel/lodel": {
             "type": "vcs",
-            "url": "git@gitlab.huma-num.fr:openedition/lodel/lodel.git"
+            "url": "git@gitlab.labocleo.org:oe-sect-info/lodel/lodel.git"
         },
         "lodel/lodel-skeleton": {
             "type": "vcs",

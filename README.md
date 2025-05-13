@@ -9,12 +9,7 @@ The transformation is executed prior to the import and validation process in **L
 
 📽️ **Video Demonstration**: A demonstration video of this bundle is available here: [Nakala Platform](https://api.nakala.fr/embed/10.34847/nkl.4a0ab841/340eddb033b6ab933348a3842ba5f34eb34b7930).
 
-_Last updated: December 17, 2024_
-
-## External resources
-
-- [Saxon script](src/Resources/scripts/): The ```saxon-he-10.6.jar``` file is part of the Saxon-HE product, which is distributed under the Mozilla Public License version 2.0.
-- [Métopes stylesheets](src/Resources/stylesheets/jatsToTei): The required stylesheets for this project are available at [Métopes Git Repository](https://git.unicaen.fr/metopes/xxe-addons/-/tree/master/metopes_tei/xxe/jats/jats_2_commons?ref_type=heads). Please download the stylesheets and place them in the ```src/Resources/stylesheets/jatsToTei``` directory.
+_Last updated: May 6, 2025_
 
 ## Requirements
 
@@ -39,6 +34,42 @@ $ composer require lodel/lodel-interoperability-bundle:dev-main
 
 The bundle should be automatically usable without requiring additional configuration.
 
+## Defining transformations
+
+### _Configuration_
+
+Transformations must be configured in [```src/Resources/config/packages/lodel_data_interoperability.yaml```](src/Resources/config/packages/lodel_data_interoperability.yaml). Each transformation entry requires:
+
+- A unique identifier (the key, e.g., ```jatsToTei```) used internally.
+- A human-readable label (```label```) that describes the transformation.
+- A list of XSLT ```files``` executed in order by Saxon. Each step processes the output of the previous one.
+
+This structure allows chaining multiple transformation steps while keeping configuration centralized and explicit.
+
+Example:
+```bash
+lodel_data_interoperability:
+    (...)
+    transformation:
+        jatsToTei:
+            label: JATS to TEI
+            files:
+                - jats_to_tei-1.xsl
+                - jats_to_tei-2.xsl
+```
+
+This example defines a transformation named ```jatsToTei```, which converts JATS XML into TEI XML using two sequential XSLT files.
+
+### _Stylesheets_
+
+All XSLT files required for the transformation processes — including both the executable stylesheets (listed in the configuration) and any supporting/imported stylesheets — must be placed in the [```src/Resources/stylesheets/```](src/Resources/stylesheets/) directory. This ensures they are correctly located and accessible during Saxon processing.
+
+## External resources
+
+### _Saxon script_
+
+The [```saxon-he-10.6.jar```](src/Resources/scripts/) file is part of the Saxon-HE product, which is distributed under the Mozilla Public License version 2.0.
+
 ## Documentation
 
 This bundle uses Doxygen to generate code documentation.
@@ -59,7 +90,6 @@ The generated HTML documentation will be available in ```docs/html/```.
 Open ```index.html``` in a browser to view it.
 If the code changes, rerun the above steps to update the documentation.
 
-
 ## Makefile Commands
 
 This project includes a ```Makefile``` to simplify common development tasks.
@@ -67,6 +97,7 @@ Below are the available commands and their usage:
 
 - ```make quality```: Runs PHP-CS-Fixer and PHPStan to ensure code quality and perform static analysis.  
 - ```make security```: Uses Symfony's security check to check for known vulnerabilities in dependencies.
+- ```make tests```: Executes all automated tests with PHPUnit to ensure that the application behaves as expected.
 
 ## Troubleshooting
 ### Common Issues
