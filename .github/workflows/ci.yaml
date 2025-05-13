@@ -44,7 +44,7 @@ jobs:
                   composer config --unset repositories
                # <-- REMOVE: End of block to be removed
                   composer install --no-interaction --prefer-dist
-
+            
             - name: Upload vendor and composer.lock
               uses: actions/upload-artifact@v4
               with:

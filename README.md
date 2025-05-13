@@ -79,6 +79,42 @@ All XSLT files required for the transformation processes — including both the 
 
 The [```saxon-he-10.6.jar```](src/Resources/scripts/) file is part of the Saxon-HE product, which is distributed under the Mozilla Public License version 2.0.
 
+## Defining transformations
+
+### _Configuration_
+
+Transformations must be configured in [```src/Resources/config/packages/lodel_data_interoperability.yaml```](src/Resources/config/packages/lodel_data_interoperability.yaml). Each transformation entry requires:
+
+- A unique identifier (the key, e.g., ```jatsToTei```) used internally.
+- A human-readable label (```label```) that describes the transformation.
+- A list of XSLT ```files``` executed in order by Saxon. Each step processes the output of the previous one.
+
+This structure allows chaining multiple transformation steps while keeping configuration centralized and explicit.
+
+Example:
+```bash
+lodel_data_interoperability:
+    (...)
+    transformation:
+        jatsToTei:
+            label: JATS to TEI
+            files:
+                - jats_to_tei-1.xsl
+                - jats_to_tei-2.xsl
+```
+
+This example defines a transformation named ```jatsToTei```, which converts JATS XML into TEI XML using two sequential XSLT files.
+
+### _Stylesheets_
+
+All XSLT files required for the transformation processes — including both the executable stylesheets (listed in the configuration) and any supporting/imported stylesheets — must be placed in the [```src/Resources/stylesheets/```](src/Resources/stylesheets/) directory. This ensures they are correctly located and accessible during Saxon processing.
+
+## External resources
+
+### _Saxon script_
+
+The [```saxon-he-10.6.jar```](src/Resources/scripts/) file is part of the Saxon-HE product, which is distributed under the Mozilla Public License version 2.0.
+
 ## Documentation
 
 This bundle uses Doxygen to generate code documentation.
