@@ -2,3 +2,9 @@ parameters:
   level: 8
   paths:
     - src
+    - tests
+  ignoreErrors:
+    - '#Method .+::.+\(\) return type has no value type specified in iterable type (array|iterable)#'
+    - '#Property .+::\$.* type has no value type specified in iterable type (array|iterable)#'
+    - '#Method .+::.+\(\) has parameter .+ with no value type specified in iterable type (array|iterable)#'
+  reportUnmatchedIgnoredErrors: false

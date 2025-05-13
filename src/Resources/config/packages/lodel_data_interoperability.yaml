@@ -1,0 +1,29 @@
+lodel_data_interoperability:
+    ## Path to the Saxon JAR file used for XSLT transformations.
+    ## By default, this is set in the Configuration.php file.
+    ## Uncomment and override this value if necessary.
+    
+    #saxon_dir: /custom/path/to/saxon.jar
+
+    ## Directory where the XSLT stylesheets are stored.
+    ## By default, this is set in the Configuration.php file.
+    ## Uncomment and override this path if you need a custom directory.
+    
+    #stylesheets_dir: /custom/path/to/stylesheets
+
+    ## Transformation settings:
+    ## This section defines different transformation processes, each identified by a unique name.
+    transformation:
+        ## The unique identifier for the transformation type.
+        ## Example of a transformation process: 'jatsToTei' 
+        ## This is used for transforming JATS XML into TEI XML format.
+        jatsToTei:  
+            ## A human-readable label for this transformation process.
+            label: JATS to TEI  
+            
+            ## List of XSLT files that will be used in this transformation process.
+            ## Order matters, as each file processes the output of the previous one.
+            ## You can add as many files as needed to handle different steps in the transformation.
+            files:
+                - jats_to_tei-1.xsl
+                - jats_to_tei-2.xsl
