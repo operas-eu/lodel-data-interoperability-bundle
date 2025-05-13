@@ -44,7 +44,7 @@ jobs:
                   composer config --unset repositories
                # <-- REMOVE: End of block to be removed
                   composer install --no-interaction --prefer-dist
-            
+
             - name: Upload vendor and composer.lock
               uses: actions/upload-artifact@v4
               with:
@@ -84,8 +84,14 @@ jobs:
             
             - name: Run PHPStan
               run: |
-               # REMOVE: The following block adds an ignore rule for PHPStan to suppress errors related to missing Lodel classes -->
-                  sed -i '/^ *ignoreErrors:/a\    - "#Class Lodel\\\\\\\\Bundle\\\\\\\\.* not found#"' phpstan.neon.dist 
+               # REMOVE: The following block adds ignore rules for PHPStan to suppress errors related to missing Lodel classes -->
+                  sed -i '/^ *ignoreErrors:/a\
+                   - "#Class Lodel\\\\\\\\.* not found#"\
+                   - "#Call to method .* on an unknown class Lodel\\\\\\\\.*#"\
+                   - "#Trying to mock an undefined method .* on class Lodel\\\\\\\\.*#"\
+                   - "#PHPDoc tag @var .* contains unknown class Lodel\\\\\\\\.*#"\
+                   - "#Parameter .* has invalid type Lodel\\\\\\\\.*#"\
+                   - "#Property .* has unknown class Lodel\\\\\\\\.* as its type#"' phpstan.neon.dist
                # <-- REMOVE: End of block to be removed
                   vendor/bin/phpstan analyse
 

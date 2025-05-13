@@ -1,0 +1,3 @@
+controllers: # Defines the location and type of the controllers.
+    resource: ../../Controller/ # Specifies that the controllers are located in the '../../Controller/' directory.
+    type: attribute # The 'type' is set to 'attribute', meaning Symfony will automatically register the controllers using PHP attributes (annotations).

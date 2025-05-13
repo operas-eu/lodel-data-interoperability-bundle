@@ -17,9 +17,16 @@ lodel_data_interoperability:
         ## The unique identifier for the transformation type.
         ## Example of a transformation process: 'jatsToTei' 
         ## This is used for transforming JATS XML into TEI XML format.
-        jatsToTei:  
+        jatsToTei:
             ## A human-readable label for this transformation process.
-            label: JATS to TEI  
+            label: JATS to TEI
+
+            ## Operation type for this transformation.
+            ## Must be either 'import' or 'export':
+            ## - 'import' means the transformation converts external data into the internal TEI format.
+            ## - 'export' means the transformation converts internal TEI data into an external format.
+            ## This value can be used to organize or filter transformations by direction.
+            operation: import
             
             ## List of XSLT files that will be used in this transformation process.
             ## Order matters, as each file processes the output of the previous one.
@@ -27,3 +34,8 @@ lodel_data_interoperability:
             files:
                 - jats_to_tei-1.xsl
                 - jats_to_tei-2.xsl
+        teiToJats:
+            label: TEI to JATS
+            operation: export
+            files:
+                - tei_to_jats.xsl

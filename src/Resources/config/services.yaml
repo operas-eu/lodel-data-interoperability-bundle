@@ -15,7 +15,8 @@ services:
     Lodel\DataInteroperabilityBundle\Service\TransformationProvider:
         arguments:
             $params: '@parameter_bag' # Injects the ParameterBagInterface for retrieving configuration
-    
+            $translator: '@translator' # Injects the translator service
+
     # Declare the TeiUploadFormListener service
     Lodel\DataInteroperabilityBundle\EventListener\TeiUploadFormListener:
         arguments:
@@ -28,5 +29,36 @@ services:
         arguments:
             $formListener: '@Lodel\DataInteroperabilityBundle\EventListener\TeiUploadFormListener' # Injects the form listener
             $transformationProvider: '@Lodel\DataInteroperabilityBundle\Service\TransformationProvider' # Injects TransformationProvider
+            $translator: '@translator' # Injects the translator service
         tags:
             - { name: form.type_extension } # Registers this as a form type extension
+
+    # Declare the DataProvider service
+    Lodel\Bundle\CoreBundle\DataProvider\DataProvider:
+        arguments:
+            $dataProviders: '@service_container'  # Injects the service container to access various data providers
+    
+    # Declare the TEIExporterInterface service
+    Lodel\ServiceIOBundle\TEI\TEIExporterInterface: '@Lodel\ServiceIOBundle\TEI\TEIExporter'
+
+    # Declare the JatsExport service
+    Lodel\DataInteroperabilityBundle\Service\JatsExport:
+        arguments:
+            $dataProvider: '@?Lodel\Bundle\CoreBundle\DataProvider\DataProvider'  # Injects the DataProvider service (optional)
+            $teiExporterInterface: '@?Lodel\ServiceIOBundle\TEI\TEIExporterInterface'  # Injects the TEIExporterInterface service (optional)
+            $params: '@parameter_bag' # Injects the ParameterBagInterface for retrieving configuration
+
+    # Declare the JatsExportController service
+    Lodel\DataInteroperabilityBundle\Controller\JatsExportController:
+        arguments:
+            $jatsExport: '@?Lodel\DataInteroperabilityBundle\Service\JatsExport'  # Injects the JatsExport service
+        tags:
+            - { name: 'controller.service_arguments' }  # Registers this as a controller with service arguments
+
+    # Declare the JatsExportExtension service (Twig extension for JATS export buttons)
+    Lodel\DataInteroperabilityBundle\Twig\JatsExportExtension:
+        arguments:
+            $urlGenerator: '@router' # Injects the router service to generate URLs for the export buttons
+            $translator: '@translator' # Injects the translator service to translate the button labels
+        tags:
+            - { name: 'twig.extension' }

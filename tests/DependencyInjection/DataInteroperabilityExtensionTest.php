@@ -49,6 +49,7 @@ final class DataInteroperabilityExtensionTest extends TestCase
             'transformation' => [
                 'fooToBar' => [
                     'label' => 'Foo to Bar',
+                    'operation' => 'import',
                     'files' => [
                         'file1.xsl',
                         'file2.xsl',
@@ -73,6 +74,8 @@ final class DataInteroperabilityExtensionTest extends TestCase
         $this->assertArrayHasKey('fooToBar', $params['transformation']);
         $this->assertArrayHasKey('label', $params['transformation']['fooToBar']);
         $this->assertEquals('Foo to Bar', $params['transformation']['fooToBar']['label']);
+        $this->assertArrayHasKey('operation', $params['transformation']['fooToBar']);
+        $this->assertEquals('import', $params['transformation']['fooToBar']['operation']);
         $this->assertArrayHasKey('files', $params['transformation']['fooToBar']);
         $this->assertCount(2, $params['transformation']['fooToBar']['files']);
         $this->assertEquals('file1.xsl', $params['transformation']['fooToBar']['files'][0]);
@@ -83,19 +86,29 @@ final class DataInteroperabilityExtensionTest extends TestCase
      * Test the prepend method to ensure it correctly loads configuration into the container.
      *
      * This test checks that before calling the prepend method, there are no configurations
-     * loaded for the 'lodel_data_interoperability' extension. After calling prepend, it ensures
-     * that the configuration is properly added to the container.
+     * loaded for the 'lodel_data_interoperability' and 'framework.translation' extensions.
+     * After calling prepend, it ensures that the configurations for both extensions are properly added to the container.
      */
     public function testPrepend(): void
     {
         // Assert that no configuration is loaded for 'lodel_data_interoperability' before calling prepend
-        $this->assertEmpty($this->container->getExtensionConfig(self::ALIAS));
+        $this->assertEmpty($this->container->getExtensionConfig('lodel_data_interoperability'));
 
-        // Call the prepend method, which should add or merge the configuration for the extension
+        // Assert that no 'translator' configuration exists within 'framework' before calling prepend
+        $frameworkConfig = $this->container->getExtensionConfig('framework');
+        $translatorConfig = array_filter($frameworkConfig, fn ($config) => isset($config['translator']));
+        $this->assertEmpty($translatorConfig);
+
+        // Call the prepend method, which should add or merge the configuration for the extensions
         $this->extension->prepend($this->container);
 
-        // Assert that configuration has been added after calling prepend
-        $this->assertNotEmpty($this->container->getExtensionConfig(self::ALIAS));
+        // Assert that configuration for 'lodel_data_interoperability' has been added after calling prepend
+        $this->assertNotEmpty($this->container->getExtensionConfig('lodel_data_interoperability'));
+
+        // Assert that 'translator' configuration exists and is not empty within 'framework' after calling prepend
+        $frameworkConfig = $this->container->getExtensionConfig('framework');
+        $translatorConfig = array_filter($frameworkConfig, fn ($config) => isset($config['translator']));
+        $this->assertNotEmpty($translatorConfig);
     }
 
     /**

@@ -103,7 +103,7 @@ final class TeiUploadFormListenerTest extends TestCase
                 return isset($data['uploadedFile'])
                        && $data['uploadedFile'] instanceof UploadedFile
                        && $data['uploadedFile']->getPathname() === $this->transformedFilePath
-                       && $data['uploadedFile']->getClientOriginalName() === $uploadedFile->getClientOriginalName()
+                       && $data['uploadedFile']->getClientOriginalName() === $uploadedFile->getClientOriginalName().'.'.($uploadedFile->getClientOriginalExtension() ?: 'xml')
                        && $data['uploadedFile']->getClientMimeType() === $uploadedFile->getClientMimeType();
             }));
 

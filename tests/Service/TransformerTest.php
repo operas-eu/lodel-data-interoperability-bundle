@@ -14,6 +14,8 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
  * These tests validate the functionality of the Transformer service,
  * including the transformation of XML files between different schemas
  * and error handling for unsupported transformation types.
+ *
+ * @group lodel
  */
 final class TransformerTest extends KernelTestCase
 {

@@ -42,6 +42,7 @@ final class ConfigurationTest extends TestCase
             'transformation' => [
                 'fooToBar' => [
                     'label' => 'Foo to Bar',
+                    'operation' => 'import',
                     'files' => [
                         'file1.xsl',
                         'file2.xsl',
@@ -63,6 +64,8 @@ final class ConfigurationTest extends TestCase
         $this->assertArrayHasKey('fooToBar', $processedConfig['transformation']);
         $this->assertArrayHasKey('label', $processedConfig['transformation']['fooToBar']);
         $this->assertEquals('Foo to Bar', $processedConfig['transformation']['fooToBar']['label']);
+        $this->assertArrayHasKey('operation', $processedConfig['transformation']['fooToBar']);
+        $this->assertEquals('import', $processedConfig['transformation']['fooToBar']['operation']);
         $this->assertArrayHasKey('files', $processedConfig['transformation']['fooToBar']);
         $this->assertCount(2, $processedConfig['transformation']['fooToBar']['files']);
         $this->assertEquals('file1.xsl', $processedConfig['transformation']['fooToBar']['files'][0]);

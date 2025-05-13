@@ -25,9 +25,7 @@ use Symfony\Component\Process\Process;
  */
 class Transformer implements TransformerInterface
 {
-    /**
-     * @var array<string, mixed> Handles configuration settings for stylesheets and Saxon-HE processing
-     */
+    /** @var array Handles configuration settings for stylesheets and Saxon-HE processing */
     private array $config;
 
     /**
@@ -153,7 +151,6 @@ class Transformer implements TransformerInterface
     {
         // Create a temporary output file.
         $outputFile = tempnam(sys_get_temp_dir(), $transformation.'_');
-        rename($outputFile, $outputFile .= '.xml');
 
         // Build the command to execute the Saxon-HE transformation.
         $process = new Process([

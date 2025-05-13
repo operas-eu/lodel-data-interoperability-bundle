@@ -1,0 +1,9 @@
+framework:
+    # Enables the translation component, allowing automatic handling of text translations.
+    translator:
+        # Directory where translation files are stored. Points to 'translations' in 'Resources'.
+        default_path: '%kernel.project_dir%/src/Resources/translations'
+
+        # Fallback languages. If a translation is missing, use this as the default (English).
+        fallbacks:
+            - en  # When no translation is found, English is used as a fallback.

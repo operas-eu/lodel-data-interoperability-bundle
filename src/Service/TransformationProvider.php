@@ -18,6 +18,7 @@ declare(strict_types=1);
 namespace Lodel\DataInteroperabilityBundle\Service;
 
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * This service is responsible for retrieving available transformation types
@@ -28,9 +29,7 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
  */
 final class TransformationProvider
 {
-    /**
-     * @var array<string, array{label: string}> stores the list of transformation types available in the configuration
-     */
+    /** @var array stores the list of transformation types available in the configuration */
     private array $transformations;
 
     /**
@@ -39,36 +38,50 @@ final class TransformationProvider
      * The constructor accepts the `ParameterBagInterface` service, which provides access
      * to Symfony parameters (like the configuration settings).
      *
-     * @param ParameterBagInterface $params the service allowing access to Symfony parameters
+     * @param ParameterBagInterface $params     the service allowing access to Symfony parameters
+     * @param TranslatorInterface   $translator the service responsible for translation of text messages
      */
-    public function __construct(private ParameterBagInterface $params)
-    {
+    public function __construct(
+        private ParameterBagInterface $params,
+        private TranslatorInterface $translator,
+    ) {
         // Store the full transformation configuration directly
         $this->transformations = $this->params->get('lodel_data_interoperability')['transformation'] ?? [];
     }
 
     /**
-     * Retrieves the list of available transformation types.
+     * Retrieves the list of transformation types filtered by the given operation type ('import' or 'export').
      *
-     * This method processes the transformations and returns them as an array with
-     * labels as keys and transformation identifiers as values.
+     * This method returns only the transformations whose 'operation' value matches the given type.
+     * It is typically used to separate transformations meant for importing data from those used to export it.
      *
-     * @return array the transformation types defined in the configuration
+     * @param string $operation The type of operation to filter by. Must be 'import' or 'export'.
+     *
+     * @return array an associative array where keys are human-readable labels and values are transformation identifiers
+     *
+     * @throws \Exception if an unsupported operation type is provided
      */
-    public function getTransformations(): array
+    public function getTransformationsByOperation(string $operation): array
     {
-        // Initialize the choices array with the default 'None' option.
-        $choices = ['None' => 'none'];
-
-        // Loop through each transformation defined in the configuration and add it to the choices array.
-        foreach ($this->transformations as $key => $transformation) {
-            // Get the label of the transformation from the configuration.
-            $label = $transformation['label'];
-            // Add the transformation label and its key to the choices array.
-            $choices[$label] = $key;
+        // Validate the operation value to prevent typos or unsupported operations
+        if (!in_array($operation, ['import', 'export'], true)) {
+            throw new \Exception("Invalid operation '$operation'. Expected 'import' or 'export'.");
         }
 
-        // Return the complete list of transformations, including the 'None' option.
+        // Initialize the choices array with the default 'None' option (translated).
+        $choices = [$this->translator->trans('lodel.interoperability.transformation.none') => 'none'];
+
+        // Loop through each transformation in the configuration.
+        foreach ($this->transformations as $key => $transformation) {
+            // Only include transformations matching the given operation type.
+            if ($operation === $transformation['operation']) {
+                // Get the transformation's label
+                $label = $transformation['label'];
+                // Add it to the list of choices.
+                $choices[$label] = $key;
+            }
+        }
+
         return $choices;
     }
 }
