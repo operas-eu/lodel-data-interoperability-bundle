@@ -39,8 +39,8 @@ jobs:
 
             - name: Install project dependencies
               run: |
-               # REMOVE: The following block removes the 'lodel/lodel-skeleton' repository and package from the project configuration -->
-                  composer remove lodel/lodel-skeleton --no-update
+               # REMOVE: The following block removes the 'lodel/lodel' repository and package from the project configuration -->
+                  composer remove lodel/lodel --no-update
                   composer config --unset repositories
                # <-- REMOVE: End of block to be removed
                   composer install --no-interaction --prefer-dist

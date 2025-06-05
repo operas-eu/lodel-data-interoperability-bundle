@@ -60,7 +60,7 @@ class TeiUploadFormListener implements EventSubscriberInterface
             // Create a new UploadedFile object for the transformed file
             $transformedFile = new UploadedFile(
                 $transformedFilePath,
-                $uploadedFile->getClientOriginalName() . '.' . ($uploadedFile->getClientOriginalExtension() ?: 'xml'),
+                $uploadedFile->getClientOriginalName().'.'.($uploadedFile->getClientOriginalExtension() ?: 'xml'),
                 $uploadedFile->getClientMimeType(),
                 null,
                 true // Mark the file as "already moved"

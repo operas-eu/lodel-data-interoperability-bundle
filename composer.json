@@ -11,7 +11,7 @@
         "ext-json": "*",
         "ext-libxml": "*",
         "ext-xsl": "*",
-        "lodel/lodel-skeleton": "dev-main",
+        "lodel/lodel": "dev-master",
         "symfony/dotenv": "6.4.*",
         "symfony/form": "6.4.*",
         "symfony/framework-bundle": "6.4.*",
@@ -52,10 +52,6 @@
         "lodel/lodel": {
             "type": "vcs",
             "url": "git@gitlab.labocleo.org:oe-sect-info/lodel/lodel.git"
-        },
-        "lodel/lodel-skeleton": {
-            "type": "vcs",
-            "url": "git@gitlab.labocleo.org:oe-sect-info/lodel/lodel-skeleton.git"
         }
     }
 }
