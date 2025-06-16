@@ -1,0 +1,82 @@
+# Default configuration for the pipeline
+default:
+    # Specifies the Docker image to use for all jobs in this pipeline.
+    image: php:8.1-cli
+
+# Define the stages in the CI pipeline
+stages:
+    - tests  # A single stage named "tests" that includes all testing jobs.
+
+# Commands to execute before running any job script
+before_script:
+    # Update and install system dependencies required for the project.
+    - apt-get update
+    - apt-get install -y libxslt-dev libzip-dev libicu-dev  # Libraries for XML, ZIP handling, and Unicode support.
+    - apt-get install -y zip unzip git default-jre openssh-client  # Additional tools for working with ZIP files, Git, Java and OpenSSH.
+
+    # Install PHP extensions needed for the application.
+    - docker-php-ext-install intl pcntl zip xsl
+
+    # Output the PHP and Java versions to confirm the correct environment is set up.
+    - php --version
+    - java --version
+
+    # Install Composer globally to manage PHP dependencies.
+    - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+    - composer --version
+
+# REMOVE: The following block removes the 'lodel/lodel-skeleton' repository and package from the project configuration -->
+    - composer remove lodel/lodel-skeleton --no-update
+    - composer config --unset repositories
+# <-- REMOVE: End of block to be removed
+
+    # Install PHP project dependencies using Composer.
+    - composer install --no-interaction --prefer-dist
+
+# REMOVE: The following block adds necessary dependencies which were expected to be installed through Lodel -->
+    - composer require symfony/twig-bundle:^6.4
+    - composer require symfony/yaml:^6.4
+# <-- REMOVE: End of block to be removed
+
+    # Install the Symfony CLI for project management and testing.
+    - curl -sS https://get.symfony.com/cli/installer | bash
+    - mv ~/.symfony*/bin/symfony /usr/local/bin/symfony
+
+# Job to check the quality of the codebase
+Quality:
+    stage: tests  # Run in the "tests" stage.
+    interruptible: true  # Allow the job to be interrupted if a new pipeline is triggered.
+    script:
+        # Validate configuration YAML file syntax
+        - vendor/bin/yaml-lint src/
+
+        # Check code formatting using PHP-CS-Fixer.
+        - vendor/bin/php-cs-fixer fix
+
+        # Perform static code analysis using PHPStan.
+# REMOVE: The following block adds an ignore rule for PHPStan to suppress errors related to missing Lodel classes -->
+        - sed -i '/^ *ignoreErrors:/a\    - "#Class Lodel\\\\\\\\Bundle\\\\\\\\.* not found#"' phpstan.neon.dist
+# <-- REMOVE: End of block to be removed
+        - vendor/bin/phpstan analyse
+
+# Job to perform security checks
+Security:
+    stage: tests  # Run in the "tests" stage.
+    interruptible: true  # Allow the job to be interrupted by new pipelines.
+    allow_failure: true  # Do not fail the pipeline if this job fails.
+    script:
+        # Run Symfony's security checker to identify known vulnerabilities.
+        - symfony security:check --no-interaction
+
+# Job to execute unit tests
+Unit tests:
+    stage: tests  # Run in the "tests" stage.
+    interruptible: true  # Allow interruption for new pipeline triggers.
+    script:
+        # Run PHPUnit tests using Symfony's simple-phpunit wrapper.
+        # UNCOMMENT the following line to run all tests, including those in @group lodel
+        # - vendor/bin/phpunit
+
+# REMOVE: The following block excludes all tests in @group lodel for CI purposes only -->
+        - vendor/bin/phpunit --exclude-group lodel
+# <-- REMOVE: End of block to be removed

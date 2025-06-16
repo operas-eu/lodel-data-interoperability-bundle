@@ -1,27 +1,32 @@
 services:
     # Default settings for all services defined in this file
     _defaults:
-        autowire: false # Automatic dependency injection is disabled
-        autoconfigure: false # Services won't be automatically tagged for features like event listeners or form extensions
-        public: false # Services are private by default and can't be accessed directly from outside the container
+        autowire: false # Autowiring is disabled, meaning dependencies will not be automatically injected
+        autoconfigure: false # Autoconfiguration is disabled, preventing automatic tagging
+        public: false  # All services are private by default and can't be accessed directly from outside the container
 
     # Declare the Transformer service
-    Lodel\DataInteroperabilityBundle\Service\Transformer: ~
+    Lodel\DataInteroperabilityBundle\Service\Transformer:
+        public: true # This service is explicitly made public for access if needed
+        arguments:
+            $params: '@parameter_bag' # Injects the parameter bag to retrieve parameters from YAML
 
+    # Declare the TransformationProvider service
+    Lodel\DataInteroperabilityBundle\Service\TransformationProvider:
+        arguments:
+            $params: '@parameter_bag' # Injects the ParameterBagInterface for retrieving configuration
+    
     # Declare the TeiUploadFormListener service
     Lodel\DataInteroperabilityBundle\EventListener\TeiUploadFormListener:
         arguments:
-            # Inject the Transformer service into the $transformer argument
-            $transformer: '@Lodel\DataInteroperabilityBundle\Service\Transformer'
+            $transformer: '@Lodel\DataInteroperabilityBundle\Service\Transformer' # Inject the Transformer service
         tags:
-            # Tag this service as a form event subscriber
-            - { name: 'form.event_subscriber' }
+            - { name: 'form.event_subscriber' } # Registers this as a form event subscriber
 
     # Declare the TeiUploadFormTypeExtension service
     Lodel\DataInteroperabilityBundle\Form\TeiUploadFormTypeExtension:
         arguments:
-            # Inject the TeiUploadFormListener service into the $formListener argument
-            $formListener: '@Lodel\DataInteroperabilityBundle\EventListener\TeiUploadFormListener'
+            $formListener: '@Lodel\DataInteroperabilityBundle\EventListener\TeiUploadFormListener' # Injects the form listener
+            $transformationProvider: '@Lodel\DataInteroperabilityBundle\Service\TransformationProvider' # Injects TransformationProvider
         tags:
-            # Tag this service as a form type extension
-            - { name: form.type_extension }
+            - { name: form.type_extension } # Registers this as a form type extension

@@ -1,0 +1,142 @@
+name: CI Pipeline
+
+on:
+    push:
+    pull_request:
+
+jobs:
+    build:
+        name: Build
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v3
+
+            - name: Set up PHP 8.1 with tools
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: '8.1'
+                  extensions: intl, pcntl, zip, xsl
+                  tools: composer, symfony
+
+            - name: Install required system packages
+              run: |
+                  sudo apt-get update
+                  sudo apt-get install -y libxslt-dev libzip-dev libicu-dev zip unzip git default-jre openssh-client
+
+            - name: Show versions
+              run: |
+                  php --version
+                  java --version
+            
+            - name: Cache Composer dependencies
+              id: composer-cache
+              uses: actions/cache@v3
+              with:
+                  path: vendor
+                  key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+                  restore-keys: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}-
+
+            - name: Install project dependencies
+              run: |
+               # REMOVE: The following block removes the 'lodel/lodel' repository and package from the project configuration -->
+                  composer remove lodel/lodel --no-update
+                  composer config --unset repositories
+               # <-- REMOVE: End of block to be removed
+                  composer install --no-interaction --prefer-dist
+
+            - name: Upload vendor and composer.lock
+              uses: actions/upload-artifact@v4
+              with:
+                  name: dependencies
+                  path: |
+                      vendor
+                      composer.lock
+
+    quality:
+        name: Code Quality
+        runs-on: ubuntu-latest
+        needs: build
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v3
+
+            - name: Set up PHP 8.1 with tools
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: '8.1'
+                  extensions: intl, pcntl, zip, xsl
+                  tools: composer
+
+            - name: Download dependencies
+              uses: actions/download-artifact@v4
+              with:
+                  name: dependencies
+            
+            - name: Fix permissions for vendor/bin executables
+              run: chmod +x vendor/bin/*
+
+            - name: Run YAML lint
+              run: vendor/bin/yaml-lint src/
+
+            - name: Run PHP-CS-Fixer
+              run: vendor/bin/php-cs-fixer fix
+            
+            - name: Run PHPStan
+              run: |
+               # REMOVE: The following block adds an ignore rule for PHPStan to suppress errors related to missing Lodel classes -->
+                  sed -i '/^ *ignoreErrors:/a\    - "#Class Lodel\\\\\\\\Bundle\\\\\\\\.* not found#"' phpstan.neon.dist 
+               # <-- REMOVE: End of block to be removed
+                  vendor/bin/phpstan analyse
+
+    security:
+        name: Security Checks
+        runs-on: ubuntu-latest
+        needs: build
+        continue-on-error: true
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v3
+
+            - name: Set up PHP 8.1 with tools
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: '8.1'
+                  tools: symfony
+
+            - name: Download dependencies
+              uses: actions/download-artifact@v4
+              with:
+                  name: dependencies
+
+            - name: Run Symfony Security Checker
+              run: symfony security:check --no-interaction
+
+    tests:
+        name: Unit Tests
+        runs-on: ubuntu-latest
+        needs: build
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v3
+
+            - name: Set up PHP 8.1 with tools
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: '8.1'
+                  extensions: intl, pcntl, zip, xsl
+                  tools: composer
+
+            - name: Download dependencies
+              uses: actions/download-artifact@v4
+              with:
+                  name: dependencies
+
+            - name: Run PHPUnit
+              run: |
+               # REMOVE: The following block excludes all tests in @group lodel for CI purposes only -->
+                  chmod +x vendor/bin/phpunit
+                  vendor/bin/phpunit --exclude-group lodel
+               # <-- REMOVE: End of block to be removed      
+            # Pour exécuter tous les tests, y compris ceux avec le groupe lodel, décommente ceci :
+            #    vendor/bin/phpunit

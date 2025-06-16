@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+This file is part of the CRAFT-OA Project (https://www.craft-oa.eu/)
+funded by the European Union (HORIZON-INFRA-2022-EOSC-01 Grant Agreement: 101094397).
+
+Developments have been made at OpenEdition Center, a french CNRS Support and Research Unit (UAR 2504)
+associated with Aix-Marseille University, the EHESS and Avignon University.
+
+Authors: João Martins, Jean-Christophe Souplet, Nicolas Vernot Cortes.
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+-->
+
+<TEI xmlns="http://www.tei-c.org/ns/1.0">
+	<teiHeader>
+		<fileDesc>
+			<titleStmt>
+				<title>How to Train Your Transformer</title>
+				<author>
+					<persName>
+						<surname>Doe</surname>
+						<forename>Jane</forename>
+					</persName>
+				</author>
+			</titleStmt>
+			<publicationStmt>
+				<p>Unpublished conversion from JATS to TEI</p>
+			</publicationStmt>
+			<sourceDesc>
+				<p>Original source in JATS format</p>
+			</sourceDesc>
+		</fileDesc>
+	</teiHeader>
+	<text>
+		<body>
+			<div>
+				<head>Introduction</head>
+				<p xml:id="p1">First paragraph.</p>
+				<p xml:id="p2">Second paragraph.</p>
+			</div>
+			<div>
+				<head>Conclusion</head>
+				<p xml:id="p3">Third paragraph.</p>
+			</div>
+		</body>
+	</text>
+</TEI>

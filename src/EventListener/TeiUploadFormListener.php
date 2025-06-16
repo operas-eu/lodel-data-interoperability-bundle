@@ -30,7 +30,7 @@ class TeiUploadFormListener implements EventSubscriberInterface
     /**
      * Subscribes to the PRE_SUBMIT event for forms.
      *
-     * @return array<string,string> list of events and their corresponding methods
+     * @return array list of events and their corresponding methods
      */
     public static function getSubscribedEvents(): array
     {
@@ -60,7 +60,7 @@ class TeiUploadFormListener implements EventSubscriberInterface
             // Create a new UploadedFile object for the transformed file
             $transformedFile = new UploadedFile(
                 $transformedFilePath,
-                $uploadedFile->getClientOriginalName(),
+                $uploadedFile->getClientOriginalName().'.'.($uploadedFile->getClientOriginalExtension() ?: 'xml'),
                 $uploadedFile->getClientMimeType(),
                 null,
                 true // Mark the file as "already moved"
