@@ -7,9 +7,9 @@ The transformation is executed prior to the import and validation process in **L
 
 ⚠️ **This bundle requires Lodel 2.0 (which may not yet be available)**. For more information, visit: [Lodel 2.0 Announcement](https://leo.hypotheses.org/22760) ⚠️
 
-📽️ **Video Demonstration**: A demonstration video of this bundle is available here: [Nakala Platform](https://api.nakala.fr/embed/10.34847/nkl.4a0ab841/340eddb033b6ab933348a3842ba5f34eb34b7930).
+📽️ **Video Demonstration**: A demonstration video of this bundle is available here: [Nakala Platform](https://api.nakala.fr/data/10.34847/nkl.616471b2/d8ce9ca6f4e585bf251e4103163ebe5f3a9d4166).
 
-_Last updated: May 6, 2025_
+_Last updated: June 17, 2025_
 
 ## Requirements
 
