@@ -13,6 +13,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Test\TypeTestCase;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * Unit tests for the TeiUploadFormTypeExtension class.
@@ -28,6 +29,7 @@ final class TeiUploadFormTypeExtensionTest extends TypeTestCase
     private Transformer&MockObject $transformer;
     private TeiUploadFormListener $formListener;
     private TransformationProvider $transformationProvider;
+    private TranslatorInterface&MockObject $translator;
     private TeiUploadFormTypeExtension $formTypeExtension;
 
     /**
@@ -47,12 +49,14 @@ final class TeiUploadFormTypeExtensionTest extends TypeTestCase
                 'transformation' => [
                     'fooToBar' => [
                         'label' => 'Foo to Bar',
+                        'operation' => 'import',
                     ],
                 ],
             ],
         ]);
-        $this->transformationProvider = new TransformationProvider($params);
-        $this->formTypeExtension = new TeiUploadFormTypeExtension($this->formListener, $this->transformationProvider);
+        $this->translator = $this->createMock(TranslatorInterface::class);
+        $this->transformationProvider = new TransformationProvider($params, $this->translator);
+        $this->formTypeExtension = new TeiUploadFormTypeExtension($this->formListener, $this->transformationProvider, $this->translator);
 
         parent::setUp();
     }
@@ -82,7 +86,7 @@ final class TeiUploadFormTypeExtensionTest extends TypeTestCase
         $transformationField = $form->get('transformation');
         $this->assertInstanceOf(ChoiceType::class, $transformationField->getConfig()->getType()->getInnerType());
 
-        $expectedChoices = $this->transformationProvider->getTransformations();
+        $expectedChoices = $this->transformationProvider->getTransformationsByOperation('import');
         $this->assertEquals($expectedChoices, $transformationField->getConfig()->getOption('choices'));
     }
 

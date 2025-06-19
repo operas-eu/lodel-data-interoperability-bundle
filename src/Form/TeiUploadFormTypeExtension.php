@@ -11,6 +11,7 @@ use Symfony\Component\Form\AbstractTypeExtension;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * Extends the TeiUploadFormType to add transformation-related fields.
@@ -27,11 +28,14 @@ class TeiUploadFormTypeExtension extends AbstractTypeExtension
     /**
      * Constructor with dependency injection.
      *
-     * @param TeiUploadFormListener $formListener listener to handle transformation
+     * @param TeiUploadFormListener  $formListener           listener to handle form events for TEI upload transformation
+     * @param TransformationProvider $transformationProvider service to provide available transformation types
+     * @param TranslatorInterface    $translator             service for translating text messages based on the current locale
      */
     public function __construct(
         private TeiUploadFormListener $formListener,
         private TransformationProvider $transformationProvider,
+        private TranslatorInterface $translator,
     ) {
         // Check if Java is installed on the system
         exec('java --version 2>&1', $output, $result);
@@ -56,8 +60,8 @@ class TeiUploadFormTypeExtension extends AbstractTypeExtension
             // Add a dropdown for selecting transformation type using the TransformationProvider
             $builder
                 ->add('transformation', ChoiceType::class, [
-                    'choices' => $this->transformationProvider->getTransformations(), // Uses TransformationProvider to get choices
-                    'label' => 'Transformation', // Label displayed on the form
+                    'choices' => $this->transformationProvider->getTransformationsByOperation('import'), // Uses TransformationProvider to get choices
+                    'label' => $this->translator->trans('lodel.interoperability.transformation.label'), // Translated label
                     'mapped' => false, // Field is not mapped to the entity
                 ]);
 
@@ -68,7 +72,7 @@ class TeiUploadFormTypeExtension extends AbstractTypeExtension
             $builder
                 ->add('java_warning', TextType::class, [
                     'data' => 'Java is required for transformation functionality but is not installed on this system.', // Warning message
-                    'label' => 'Transformation', // Label for clarity
+                    'label' => $this->translator->trans('lodel.interoperability.transformation.label'), // Translated label
                     'mapped' => false, // Not mapped to the entity
                     'attr' => [
                         'class' => 'text-danger', // Style the warning as an error

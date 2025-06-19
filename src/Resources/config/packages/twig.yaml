@@ -1,0 +1,11 @@
+twig:
+    # Default directory for Twig templates in this bundle.
+    default_path: '%kernel.project_dir%/src/Resources/views'
+
+    # Registers the bundle's templates so they can be referenced using "@DataInteroperabilityBundle" in the main application.
+    paths:
+        '%kernel.project_dir%/vendor/lodel/lodel-data-interoperability-bundle/src/Resources/views': DataInteroperabilityBundle
+    
+    # Global variables available in all Twig templates.
+    globals:
+        data_interoperability_bundle_enabled: true # This flag can be used in templates to check if the DataInteroperabilityBundle is enabled

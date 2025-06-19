@@ -1,0 +1,7 @@
+lodel.interoperability:
+    transformation:
+        label: Transformation
+        none: None
+    jats.export:
+        view: View JATS
+        download: Download JATS

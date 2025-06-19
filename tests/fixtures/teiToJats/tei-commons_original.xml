@@ -25,24 +25,18 @@ file that was distributed with this source code.
 					</persName>
 				</author>
 			</titleStmt>
-			<publicationStmt>
-				<p>Unpublished conversion from JATS to TEI</p>
-			</publicationStmt>
-			<sourceDesc>
-				<p>Original source in JATS format</p>
-			</sourceDesc>
 		</fileDesc>
 	</teiHeader>
 	<text>
 		<body>
 			<div>
 				<head>Introduction</head>
-				<p xml:id="p1">First paragraph.</p>
-				<p xml:id="p2">Second paragraph.</p>
+				<p>First paragraph.</p>
+				<p>Second paragraph.</p>
 			</div>
 			<div>
 				<head>Conclusion</head>
-				<p xml:id="p3">Third paragraph.</p>
+				<p>Third paragraph.</p>
 			</div>
 		</body>
 	</text>

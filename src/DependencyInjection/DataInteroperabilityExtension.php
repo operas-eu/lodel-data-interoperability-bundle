@@ -63,6 +63,8 @@ final class DataInteroperabilityExtension extends Extension implements PrependEx
         // Define the list of configuration packages to prepend
         $packages = [
             self::ALIAS, // The configuration package for this bundle
+            'translation', // The configuration package related to translation services
+            'twig', // The configuration package for Twig
         ];
 
         // Loop through each package and prepend its configuration

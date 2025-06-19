@@ -61,6 +61,12 @@ final class Configuration implements ConfigurationInterface
                                 ->isRequired()
                                 ->info('A human-readable label describing the transformation.')
                             ->end()
+                            // Define the 'operation' type: import or export
+                            ->enumNode('operation')
+                                ->values(['import', 'export'])
+                                ->isRequired()
+                                ->info("Defines the direction of the transformation:\n- 'import' transforms external input into internal TEI\n- 'export' transforms internal TEI into an external format")
+                            ->end()
                             // Define the list of XSLT files to be applied in sequence during the transformation
                             ->arrayNode('files')
                                 ->scalarPrototype() // Define the filename of each XSLT file (string)
