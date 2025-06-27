@@ -1,5 +1,5 @@
 /vendor/
-/docs/
+/doc/
 /build/
 /var/
 composer.lock

@@ -144,7 +144,7 @@ Run the following command to generate the documentation:
 $ doxygen Doxyfile
 ```
 
-The generated HTML documentation will be available in ```docs/html/```.
+The generated HTML documentation will be available in ```doc/html/```.
 Open ```index.html``` in a browser to view it.
 If the code changes, rerun the above steps to update the documentation.
 
