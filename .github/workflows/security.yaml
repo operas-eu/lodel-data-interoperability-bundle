@@ -1,0 +1,26 @@
+name: Security Checks
+
+on:
+  workflow_call:
+
+jobs:
+  security:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up PHP 8.1 with tools
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          tools: symfony
+
+      - name: Download dependencies
+        uses: actions/download-artifact@v4
+        with:
+          name: dependencies
+
+      - name: Run Symfony Security Checker
+        run: symfony security:check --no-interaction

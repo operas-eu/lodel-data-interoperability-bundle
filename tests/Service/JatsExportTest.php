@@ -27,10 +27,10 @@ final class JatsExportTest extends KernelTestCase
     private const TEI_ORIGINAL = __DIR__.'/../fixtures/teiToJats/tei-commons_original.xml';
     private const JATS_RESULT = __DIR__.'/../fixtures/teiToJats/jats-publishing_result.xml';
 
-    private DataProvider&MockObject $dataProvider;
-    private Content&MockObject $content;
-    private ContentDataProviderInterface&MockObject $contentDataProvider;
-    private TEIExporterInterface&MockObject $teiExporter;
+    private DataProvider|MockObject $dataProvider;
+    private MockObject $content;
+    private MockObject $contentDataProvider;
+    private MockObject $teiExporter;
     private ParameterBag $params;
     private JatsExport $jatsExport;
 

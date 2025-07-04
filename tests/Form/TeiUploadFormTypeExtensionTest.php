@@ -26,10 +26,10 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  */
 final class TeiUploadFormTypeExtensionTest extends TypeTestCase
 {
-    private Transformer&MockObject $transformer;
+    private Transformer|MockObject $transformer;
     private TeiUploadFormListener $formListener;
     private TransformationProvider $transformationProvider;
-    private TranslatorInterface&MockObject $translator;
+    private TranslatorInterface|MockObject $translator;
     private TeiUploadFormTypeExtension $formTypeExtension;
 
     /**

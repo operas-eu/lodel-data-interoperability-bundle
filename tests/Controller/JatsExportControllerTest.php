@@ -28,7 +28,7 @@ final class JatsExportControllerTest extends TestCase
     public function testInvoke(): void
     {
         // Create a mock of the JatsExport service
-        /** @var JatsExport&MockObject $jatsExport */
+        /** @var JatsExport|MockObject $jatsExport */
         $jatsExport = $this->createMock(JatsExport::class);
 
         // Instantiate the controller with the mocked JatsExport service

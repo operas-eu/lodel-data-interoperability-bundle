@@ -1,0 +1,28 @@
+name: Main CI Pipeline
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    uses: ./.github/workflows/build.yaml
+
+  quality:
+    needs: build
+    uses: ./.github/workflows/quality.yaml
+
+  security:
+    needs: build
+    uses: ./.github/workflows/security.yaml
+
+  tests:
+    needs: build
+    uses: ./.github/workflows/tests.yaml
+
+  sonar:
+    needs: tests
+    uses: ./.github/workflows/sonar.yaml
+    secrets:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}

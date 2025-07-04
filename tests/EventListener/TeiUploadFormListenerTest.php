@@ -20,14 +20,14 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
  */
 final class TeiUploadFormListenerTest extends TestCase
 {
-    /** @var Transformer&MockObject Mocked Transformer service used for testing the transformation logic. */
-    private Transformer&MockObject $transformer;
+    /** @var Transformer|MockObject Mocked Transformer service used for testing the transformation logic. */
+    private Transformer|MockObject $transformer;
 
     /** @var TeiUploadFormListener Instance of the listener being tested. */
     private TeiUploadFormListener $formListener;
 
-    /** @var FormEvent&MockObject Mocked Symfony FormEvent. */
-    private FormEvent&MockObject $event;
+    /** @var FormEvent|MockObject Mocked Symfony FormEvent. */
+    private FormEvent|MockObject $event;
 
     /** @var string Path to the temporary uploaded file used in tests. */
     private string $uploadedFilePath;
