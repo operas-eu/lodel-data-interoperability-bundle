@@ -18,8 +18,8 @@ use Symfony\Component\Translation\Translator;
  */
 final class JatsExportExtensionTest extends TestCase
 {
-    /** @var UrlGeneratorInterface&MockObject Mocked URL generator service */
-    private UrlGeneratorInterface&MockObject $urlGenerator;
+    /** @var UrlGeneratorInterface|MockObject Mocked URL generator service */
+    private UrlGeneratorInterface|MockObject $urlGenerator;
 
     /** @var Translator Translator service for handling translations */
     private Translator $translator;

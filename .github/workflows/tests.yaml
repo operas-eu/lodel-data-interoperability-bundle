@@ -1,0 +1,43 @@
+name: Unit Tests
+
+on:
+  workflow_call:
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up PHP 8.1 with tools
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          tools: composer
+
+      - name: Download dependencies
+        uses: actions/download-artifact@v4
+        with:
+          name: dependencies
+
+      - name: Run PHPUnit
+        run: |
+         # REMOVE: The following block excludes all tests in @group lodel for CI purposes only -->
+            chmod +x vendor/bin/phpunit
+            XDEBUG_MODE=coverage vendor/bin/phpunit \
+              --exclude-group lodel \
+              --coverage-clover build/coverage.xml \
+              --log-junit build/phpunit.xml
+         # <-- REMOVE: End of block to be removed
+        # To run all tests, including the "lodel" group, uncomment the lines below :
+        #      chmod +x vendor/bin/phpunit
+        #      XDEBUG_MODE=coverage vendor/bin/phpunit \
+        #        --coverage-clover build/coverage.xml \
+        #        --log-junit build/phpunit.xml
+
+      - name: Upload tests coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: build

@@ -1,7 +1,7 @@
 # Target for checking code quality using PHP-CS-Fixer and PHPStan
 quality:
 	# Runs YAML linting to validate configuration file syntax
-	vendor/bin/yaml-lint src/
+	vendor/bin/yaml-lint src tests
 	
 	# Runs PHP-CS-Fixer to fix coding standard violations in the codebase
 	vendor/bin/php-cs-fixer fix
@@ -21,8 +21,13 @@ security:
 
 # Target for running tests with PHPUnit and generating a code coverage report
 tests:
-	# Runs PHPUnit to execute tests and generates an HTML report of the code coverage
-	# The report is saved in the 'build/coverage-html' directory
-	XDEBUG_MODE=coverage vendor/bin/phpunit --coverage-html build/coverage-html
+	# Runs PHPUnit and generates the following reports:
+	# - An HTML coverage report in 'build/coverage-html'
+	# - A Clover XML report in 'build/coverage.xml'
+	# - A JUnit XML test report in 'build/phpunit.xml'
+	XDEBUG_MODE=coverage vendor/bin/phpunit \
+		--coverage-html build/coverage-html \
+		--coverage-clover build/coverage.xml \
+		--log-junit build/phpunit.xml
 # .PHONY tells make that 'tests' is not a file, it's a target
 .PHONY: tests

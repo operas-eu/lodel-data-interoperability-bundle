@@ -1,0 +1,49 @@
+name: SonarQube
+
+on:
+  workflow_call:
+    secrets:
+      SONAR_TOKEN:
+        required: true
+      SONAR_HOST_URL:
+        required: true
+
+jobs:
+  sonarqube:
+    runs-on: self-hosted
+    env:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Download tests coverage
+        uses: actions/download-artifact@v4
+        with:
+          name: coverage
+          path: build
+      
+      - name: Verify paths
+        run: |
+          head -20 build/coverage.xml
+          head -20 build/phpunit.xml
+      
+      - name: Fix paths
+        run: |
+          sed -i "s|/home/runner/work/lodel-data-interoperability-bundle/lodel-data-interoperability-bundle/||g" build/coverage.xml
+          sed -i 's|/home/runner/work/lodel-data-interoperability-bundle/lodel-data-interoperability-bundle/||g' build/phpunit.xml
+
+      - name: Verify fixed paths
+        run: |
+          head -20 build/coverage.xml
+          head -20 build/phpunit.xml
+
+      - name: Run SonarQube scanner 
+        uses: SonarSource/sonarqube-scan-action@v1.2
